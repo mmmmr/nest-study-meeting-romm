@@ -3,6 +3,8 @@ import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register';
 import { EmailService } from 'src/email/email.service';
 import { RedisService } from 'src/redis/redis.service';
+import { loginDto } from './dto/login';
+import { LoginUserVo } from './vo/login-user.vo';
 
 @Controller('user')
 export class UserController {
@@ -34,5 +36,32 @@ export class UserController {
   @Post('register')
   async register(@Body() registerUser: RegisterUserDto) {
     return await this.userService.register(registerUser)
+  }
+
+  // 初始化数据
+  @Get("init-data") 
+  async initData() {
+    await this.userService.initData();
+    return 'done';
+  }
+
+  @Post('login')
+  async login(@Body() loginUser: loginDto) {
+    return this.userService.login(loginUser, false);
+  } 
+
+  @Post('admin/login')
+  async adminLogin(@Body() loginUser: loginDto) {
+    return this.userService.login(loginUser, true);
+  }
+
+  @Get('refresh-token')
+  async refreshToken(@Query('refreshToken') refreshToken: string) {
+    return this.userService.refreshToken(refreshToken, false);
+  }
+
+  @Get('admin/refresh-token')
+  async adminRefreshToken(@Query('refreshToken') refreshToken: string) {
+    return this.userService.refreshToken(refreshToken, true);
   }
 }
